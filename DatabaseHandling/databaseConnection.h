@@ -7,7 +7,7 @@
 
 #endif //ECE656PROJECTHRTS_DATABASECONNECTION_H
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 #include <jdbc/mysql_driver.h>
 #include <jdbc/mysql_error.h>
@@ -34,12 +34,10 @@ class dataBaseConnection {
         sql::Connection *con;
 
     public:
-        dataBaseConnection(string host, string user, string password);
-        ~dataBaseConnection();
+        dataBaseConnection(const string& host, const string& user, const string& password);
 
-        void connect();
+
         void disconnect();
-        void createUser(string user, string password);
-        void login(string user, string password);
+        void createUser(const string& user, const string& password);
 
 };
