@@ -28,9 +28,9 @@ void User::addFriend(const std::string& friendID) {
     this->friends.push_back(friendID);
 }
 
-void User::updateInDatabase(sql::Connection *con) {
+void User::updateInDatabase(::sql::Connection *con) {
     socialNetworkBase::updateInDatabase(con);
-    sql::Statement *stmt;
+    ::sql::Statement *stmt;
     std::string query;
     std::vector<std::string> oldFriends;
     std::vector<std::string> difference;
@@ -54,9 +54,9 @@ void User::updateInDatabase(sql::Connection *con) {
 
 }
 
-void User::createInDatabase(sql::Connection *con) {
+void User::createInDatabase(::sql::Connection *con) {
     socialNetworkBase::createInDatabase(con);
-    sql::Statement *stmt;
+    ::sql::Statement *stmt;
     std::string query;
 
     stmt = con->createStatement();
@@ -72,10 +72,10 @@ void User::createInDatabase(sql::Connection *con) {
     delete stmt;
 }
 
-bool User::checkDatabaseExistence(sql::Connection *con) {
+bool User::checkDatabaseExistence(::sql::Connection *con) {
     socialNetworkBase::checkDatabaseExistence(con);
-    sql::Statement *stmt;
-    sql::ResultSet *res;
+    ::sql::Statement *stmt;
+    ::sql::ResultSet *res;
     stmt = con->createStatement();
     res = stmt->executeQuery("SELECT user_id FROM users WHERE user_id = " + this->userID);
     while(res->next()) {
@@ -88,9 +88,9 @@ bool User::checkDatabaseExistence(sql::Connection *con) {
 
 }
 
-std::vector<std::string> User::getFriends(sql::Connection *con) {
-    sql::Statement *stmt;
-    sql::ResultSet  *res;
+std::vector<std::string> User::getFriends(::sql::Connection *con) {
+    ::sql::Statement *stmt;
+    ::sql::ResultSet  *res;
     stmt = con->createStatement();
     friends = std::vector<std::string>();
     res = stmt->executeQuery("SELECT friend_id FROM connections WHERE user_id = " + this->userID);
@@ -101,8 +101,8 @@ std::vector<std::string> User::getFriends(sql::Connection *con) {
     return friends;
 }
 
-void User::updateFriends(std::vector<std::string> additionalFriends, sql::Connection *con) {
-    sql::Statement *stmt;
+void User::updateFriends(std::vector<std::string> additionalFriends, ::sql::Connection *con) {
+    ::sql::Statement *stmt;
     std::string addtoQuery = "";
     std::string query;
     stmt = con->createStatement();

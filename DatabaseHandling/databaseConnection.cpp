@@ -1,21 +1,28 @@
 //
 // Created by Hammad Rehman on 2020-11-13.
 //
-#include <stdlib.h>
+
 #include <iostream>
 #include "databaseConnection.h"
 
-dataBaseConnection::dataBaseConnection(const string& host, const string& user, const string& password) {
-    this->driver = sql::mysql::get_mysql_driver_instance();
-    this->con = driver->connect(host, user, password);
+dataBaseConnection::dataBaseConnection(const std::string& host, const std::string& user, const std::string& password) {
+    ::sql::mysql::MySQL_Driver *tempdriver;
+    //::sql::Connection *con;
+    try {
+        tempdriver = ::sql::mysql::get_mysql_driver_instance();
+    } catch(int e) {
+        //???
+    }
+    this->driver = tempdriver;
+    this->con = this->driver->connect(host, user, password);
 }
 
 void dataBaseConnection::disconnect() {
     this->con->close();
 }
 
-void dataBaseConnection::createUser(const string& user, const string& password) {
-    sql::Statement *stmt;
+void dataBaseConnection::createUser(const std::string& user, const std::string& password) {
+    ::sql::Statement *stmt;
 
     stmt = this->con->createStatement();
     stmt->execute("USE ece656project");

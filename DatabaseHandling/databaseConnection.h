@@ -18,19 +18,18 @@
 #include <jdbc/cppconn/statement.h>
 #include <jdbc/cppconn/prepared_statement.h>
 
-using namespace std;
 
 class dataBaseConnection {
 
     private:
-        sql::mysql::MySQL_Driver *driver;
-        sql::Connection *con;
+        ::sql::mysql::MySQL_Driver *driver;
+        ::sql::Connection *con;
 
     public:
-        dataBaseConnection(const string& host, const string& user, const string& password);
+        dataBaseConnection(const std::string& host, const std::string& user, const std::string& password);
 
 
         void disconnect();
-        void createUser(const string& user, const string& password);
+        void createUser(const std::string& user, const std::string& password);
 
 };
