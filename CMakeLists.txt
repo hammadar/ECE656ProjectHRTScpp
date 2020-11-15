@@ -13,7 +13,7 @@ find_package(Boost REQUIRED)
 find_library(SSL_LIB NAMES ssl PATHS ${MYSQL_DIR}/lib64 NO_DEFAULT_PATH)
 find_library(CRYPTO_LIB NAMES libcrypto.dylib PATHS ${MYSQL_DIR}/lib64 NO_DEFAULT_PATH)
 find_library(MYSQL_LIBS NAMES libmysqlcppconn8.2.8.0.22.dylib PATHS ${MYSQL_DIR}/lib64 NO_DEFAULT_PATH)
-add_executable(${PROJECT_NAME} main.cpp DatabaseHandling/databaseConnection.h DatabaseHandling/databaseConnection.cpp DatabaseClasses/socialNetworkBase.h DatabaseClasses/User.cpp DatabaseClasses/User.h)
+add_executable(${PROJECT_NAME} main.cpp DatabaseHandling/databaseConnection.h DatabaseHandling/databaseConnection.cpp DatabaseClasses/socialNetworkBase.h DatabaseClasses/User.cpp DatabaseClasses/User.h Utility/setHandling.cpp Utility/setHandling.h)
 target_link_libraries(${PROJECT_NAME} ${MYSQL_LIBS} ${SSL_LIB} ${CRYPTO_LIB} Threads::Threads)
 
 

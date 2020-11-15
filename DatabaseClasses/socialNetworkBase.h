@@ -18,5 +18,5 @@ class socialNetworkBase {
         virtual ~socialNetworkBase();
         virtual void updateInDatabase(sql::Connection &con);
         virtual void createInDatabase(sql::Connection &con);
-        virtual void checkDatabaseExistence(sql::Connection &con);
+        virtual bool checkDatabaseExistence(sql::Connection &con);
 };
