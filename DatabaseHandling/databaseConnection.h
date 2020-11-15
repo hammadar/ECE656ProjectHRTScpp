@@ -18,14 +18,7 @@
 #include <jdbc/cppconn/statement.h>
 #include <jdbc/cppconn/prepared_statement.h>
 
-
-
-#define LOCAL_IP "192.168.0.57"
-#define NORMAL_IP "99.251.104.144"
-#define DB "ece656project"
-
 using namespace std;
-
 
 class dataBaseConnection {
 
