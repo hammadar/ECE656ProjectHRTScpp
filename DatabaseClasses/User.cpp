@@ -6,7 +6,7 @@
 #include "Utility/setHandling.h"
 #include <utility>
 #include <set>
-#include <jdbc/cppconn/resultset.h>
+#include <mysql-cppconn-8/jdbc/cppconn/resultset.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/posix_time/posix_time_io.hpp>
 

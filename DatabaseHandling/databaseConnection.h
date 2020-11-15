@@ -9,14 +9,14 @@
 
 #include <cstdlib>
 #include <iostream>
-#include <jdbc/mysql_driver.h>
-#include <jdbc/mysql_error.h>
-#include <jdbc/mysql_connection.h>
-#include <jdbc/cppconn/driver.h>
-#include <jdbc/cppconn//exception.h>
-#include <jdbc/cppconn/resultset.h>
-#include <jdbc/cppconn/statement.h>
-#include <jdbc/cppconn/prepared_statement.h>
+#include <mysql-cppconn-8/jdbc/mysql_driver.h>
+#include <mysql-cppconn-8/jdbc/mysql_error.h>
+#include <mysql-cppconn-8/jdbc/mysql_connection.h>
+#include <mysql-cppconn-8/jdbc/cppconn/driver.h>
+#include <mysql-cppconn-8/jdbc/cppconn//exception.h>
+#include <mysql-cppconn-8/jdbc/cppconn/resultset.h>
+#include <mysql-cppconn-8/jdbc/cppconn/statement.h>
+#include <mysql-cppconn-8/jdbc/cppconn/prepared_statement.h>
 
 
 class dataBaseConnection {

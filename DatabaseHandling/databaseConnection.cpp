@@ -15,6 +15,9 @@ dataBaseConnection::dataBaseConnection(const std::string& host, const std::strin
     }
     this->driver = tempdriver;
     this->con = this->driver->connect(host, user, password);
+    if (this->con->isValid()) {
+        std::cout << "connected yayyy" <<std::endl;
+    }
 }
 
 void dataBaseConnection::disconnect() {
