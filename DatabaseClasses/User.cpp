@@ -7,11 +7,10 @@
 #include <utility>
 #include <set>
 #include <jdbc/cppconn/resultset.h>
-#include <boost/date_time/gregorian//gregorian.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/posix_time/posix_time_io.hpp>
 
-User::User(std::string userID, std::string firstName, std::string lastName, std::time_t birthDate,
+User::User(std::string userID, std::string firstName, std::string lastName, time_t birthDate,
            const std::string &country, const std::string& stateProvince, std::vector<std::string> friends) {
 
     this->userID = std::move(userID);
@@ -112,10 +111,10 @@ void User::updateFriends(std::vector<std::string> additionalFriends, ::sql::Conn
         } else {
             addtoQuery += "(" + this->userID + ", " + *it + "), ";
         }
-    query = "INSERT INTO connections(user_id, friend_id) VALUES " + addtoQuery;
-    stmt->execute(query);
-    delete stmt;
-}
+		query = "INSERT INTO connections(user_id, friend_id) VALUES " + addtoQuery;
+		stmt->execute(query);
+		delete stmt;
+	}
 
 
 }

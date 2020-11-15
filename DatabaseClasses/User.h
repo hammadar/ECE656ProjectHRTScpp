@@ -9,19 +9,20 @@
 
 #include "socialNetworkBase.h"
 #include <vector>
+#include <time.h>
 
 class User : public socialNetworkBase {
 private:
     std::string userID;
     std::string firstName;
     std::string lastName;
-    std::time_t birthDate;
+    time_t birthDate;
     std::string stateProvince;
     std::string country;
     std::vector<std::string> friends;
 
 public:
-    User(std::string userID, std::string firstName, std::string lastName, std::time_t birthDate, const std::string& country, const std::string& stateProvince = "", std::vector<std::string> friends = std::vector<std::string>());
+    User(std::string userID, std::string firstName, std::string lastName, time_t birthDate, const std::string& country, const std::string& stateProvince = "", std::vector<std::string> friends = std::vector<std::string>());
     void addFriend(const std::string& friendID);
     void updateInDatabase(::sql::Connection *con);
     void createInDatabase(::sql::Connection *con);
