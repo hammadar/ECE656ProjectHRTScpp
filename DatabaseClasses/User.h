@@ -16,13 +16,13 @@ private:
     std::string userID;
     std::string firstName;
     std::string lastName;
-    time_t birthDate;
+    const tm *birthDate;
     std::string stateProvince;
     std::string country;
     std::vector<std::string> friends;
 
 public:
-    User(std::string userID, std::string firstName, std::string lastName, time_t birthDate, const std::string& country, const std::string& stateProvince = "", std::vector<std::string> friends = std::vector<std::string>());
+    User(std::string userID, std::string firstName, std::string lastName, tm *birthDate, const std::string& country, const std::string& stateProvince = "", std::vector<std::string> friends = std::vector<std::string>());
     void addFriend(const std::string& friendID);
     void updateInDatabase(::sql::Connection *con);
     void createInDatabase(::sql::Connection *con);

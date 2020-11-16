@@ -5,6 +5,10 @@
 #include <iostream>
 #include "databaseConnection.h"
 
+#define LOCAL_IP "192.168.0.57"
+#define NORMAL_IP "99.251.104.144"
+#define DB "ece656project"
+
 dataBaseConnection::dataBaseConnection(const std::string& host, const std::string& user, const std::string& password) {
     ::sql::mysql::MySQL_Driver *tempdriver;
     //::sql::Connection *con;
@@ -15,9 +19,6 @@ dataBaseConnection::dataBaseConnection(const std::string& host, const std::strin
     }
     this->driver = tempdriver;
     this->con = this->driver->connect(host, user, password);
-    if (this->con->isValid()) {
-        std::cout << "connected yayyy" <<std::endl;
-    }
 }
 
 void dataBaseConnection::disconnect() {
@@ -31,6 +32,10 @@ void dataBaseConnection::createUser(const std::string& user, const std::string& 
     stmt->execute("USE ece656project");
     stmt->execute(("CREATE USER '%s'@'%' IDENTIFIED BY '%s'", user, password));
     delete stmt;
+}
+
+::sql::Connection* dataBaseConnection::getSQLConnection() {
+    return this->con;
 }
 
 

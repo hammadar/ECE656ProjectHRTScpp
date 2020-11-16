@@ -10,7 +10,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/posix_time/posix_time_io.hpp>
 
-User::User(std::string userID, std::string firstName, std::string lastName, time_t birthDate,
+User::User(std::string userID, std::string firstName, std::string lastName, tm *birthDate,
            const std::string &country, const std::string& stateProvince, std::vector<std::string> friends) {
 
     this->userID = std::move(userID);
@@ -33,17 +33,22 @@ void User::updateInDatabase(::sql::Connection *con) {
     std::string query;
     std::vector<std::string> oldFriends;
     std::vector<std::string> difference;
+    char birthDatechar [80];
+    std::string  birthDateString;
 
+    strftime(birthDatechar, 80, "%F", this->birthDate);
+    birthDateString = std::string((const char*)birthDatechar);
     stmt = con->createStatement();
     if (!this->stateProvince.empty()) {
-        query = "UPDATE users SET first_name = " + this->firstName + ", last_name = " + this->lastName + ", birth_date = " +
-                boost::posix_time::to_simple_string(boost::posix_time::from_time_t(this->birthDate)) + ", stateProvince = " + this->stateProvince +
-                ", country = " + this->country + " WHERE user_id = " + this->userID;
+        query = "UPDATE users SET first_name = \"" + this->firstName + "\", last_name = \"" + this->lastName + "\", birth_date = " +
+                birthDateString + ", stateProvince = \"" + this->stateProvince +
+                "\", country = \"" + this->country + "\" WHERE user_id = \"" + this->userID + "\"";
     } else {
-        query = "UPDATE users SET first_name = " + this->firstName + ", last_name = " + this->lastName + ", birth_date = " +
-                boost::posix_time::to_simple_string(boost::posix_time::from_time_t(this->birthDate)) + ", country = " + this->country +
-                " WHERE user_id = " + this->userID;
+        query = "UPDATE users SET first_name = \"" + this->firstName + "\", last_name = \"" + this->lastName + "\", birth_date = " +
+                birthDateString + ", country = \"" + this->country +
+                "\" WHERE user_id = \"" + this->userID + "\"";
     }
+    stmt->execute("USE ece656project");
     stmt->execute(query);
     delete stmt;
 
@@ -57,16 +62,22 @@ void User::createInDatabase(::sql::Connection *con) {
     socialNetworkBase::createInDatabase(con);
     ::sql::Statement *stmt;
     std::string query;
+    char birthDatechar [80];
+    std::string  birthDateString;
+
+    strftime(birthDatechar, 80, "%F", this->birthDate);
+    birthDateString = std::string((const char*)birthDatechar);
 
     stmt = con->createStatement();
-    if (!this->stateProvince.empty()) {
-        query = "INSERT INTO users (user_id, first_name, last_name, birth_date, country) VALUES (" + this->userID + ", " + this->firstName + ", " +
-                this->lastName + ", " + boost::posix_time::to_simple_string(boost::posix_time::from_time_t(this->birthDate)) + ", " + this->country + ")";
+    if (this->stateProvince.empty()) {
+        query = "INSERT INTO users (user_id, first_name, last_name, birth_date, country) VALUES (\"" + this->userID + "\", \"" + this->firstName + "\", \"" +
+                this->lastName + "\", \"" + birthDateString + "\", \"" + this->country + "\")";
     } else {
-        query = "INSERT INTO users (user_id, first_name, last_name, birth_date, stateProvince, country) VALUES (" + this->userID + ", " + this->firstName + ", " +
-                this->lastName + ", " + boost::posix_time::to_simple_string(boost::posix_time::from_time_t(this->birthDate)) +
-                ", " + this->stateProvince + ", " + this->country + ")";
+        query = "INSERT INTO users (user_id, first_name, last_name, birth_date, stateProvince, country) VALUES (\"" + this->userID + "\", \"" + this->firstName + "\", \"" +
+                this->lastName + "\", \"" + birthDateString +
+                "\", \"" + this->stateProvince + "\", \"" + this->country + "\")";
     }
+    stmt->execute("USE ece656project");
     stmt->execute(query);
     delete stmt;
 }
@@ -76,7 +87,8 @@ bool User::checkDatabaseExistence(::sql::Connection *con) {
     ::sql::Statement *stmt;
     ::sql::ResultSet *res;
     stmt = con->createStatement();
-    res = stmt->executeQuery("SELECT user_id FROM users WHERE user_id = " + this->userID);
+    stmt->execute("USE ece656project");
+    res = stmt->executeQuery("SELECT user_id FROM users WHERE user_id = \"" + this->userID + "\"");
     while(res->next()) {
         if (res->getString("user_id") == this->userID) {
             return true;
@@ -92,7 +104,8 @@ std::vector<std::string> User::getFriends(::sql::Connection *con) {
     ::sql::ResultSet  *res;
     stmt = con->createStatement();
     friends = std::vector<std::string>();
-    res = stmt->executeQuery("SELECT friend_id FROM connections WHERE user_id = " + this->userID);
+    stmt->execute("USE ece656project");
+    res = stmt->executeQuery("SELECT friend_id FROM connections WHERE user_id = \"" + this->userID + "\"");
     while(res->next()) {
         friends.push_back(res->getString("friend_id"));
     }
@@ -104,12 +117,16 @@ void User::updateFriends(std::vector<std::string> additionalFriends, ::sql::Conn
     ::sql::Statement *stmt;
     std::string addtoQuery = "";
     std::string query;
+    if (additionalFriends.empty()) {
+        return;
+    }
     stmt = con->createStatement();
+    stmt->execute("USE ece656project");
     for (auto it = additionalFriends.begin(); it!= additionalFriends.end(); it++) {
         if (it == additionalFriends.end()-1) {
-            addtoQuery += "(" + this->userID + ", " + *it + ")";
+            addtoQuery += "(\"" + this->userID + "\", \"" + *it + "\")";
         } else {
-            addtoQuery += "(" + this->userID + ", " + *it + "), ";
+            addtoQuery += "(\"" + this->userID + "\", \"" + *it + "\"), ";
         }
 		query = "INSERT INTO connections(user_id, friend_id) VALUES " + addtoQuery;
 		stmt->execute(query);

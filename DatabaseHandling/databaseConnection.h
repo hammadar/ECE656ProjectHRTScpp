@@ -31,5 +31,6 @@ class dataBaseConnection {
 
         void disconnect();
         void createUser(const std::string& user, const std::string& password);
+        ::sql::Connection* getSQLConnection();
 
 };
