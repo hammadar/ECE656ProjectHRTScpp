@@ -130,8 +130,9 @@ void User::updateFriends(std::vector<std::string> additionalFriends, ::sql::Conn
         }
 		query = "INSERT INTO connections(user_id, friend_id) VALUES " + addtoQuery;
 		stmt->execute(query);
-		delete stmt;
+
 	}
+    delete stmt;
 
 
 }

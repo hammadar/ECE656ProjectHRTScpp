@@ -20,5 +20,17 @@
 #include <cppconn/prepared_statement.h>
 
 class Forum: public socialNetworkBase {
+    private:
+        std::string forumID;
+        std::string titleID;
+        std::vector<std::string> threads;
+
+    public:
+        Forum(std::string forumID, std::string titleID, std::vector<std::string> threads = std::vector<std::string>());
+        void createInDatabase(::sql::Connection *con) override;
+        void updateInDatabase(::sql::Connection *con) override;
+        bool checkDatabaseExistence(::sql::Connection *con) override;
+        std::vector<std::string> getThreads(::sql::Connection *con);
+        void updateThreads(std::vector<std::string> additionalThreads, ::sql::Connection *con);
 
 };
