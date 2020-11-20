@@ -5,11 +5,12 @@
 #include "Forum.h"
 #include "Utility/setHandling.h"
 #include <set>
+#include <utility>
 
 Forum::Forum(std::string forumID, std::string titleID, std::vector<std::string> threads) {
-    this->forumID = forumID;
-    this->titleID = titleID;
-    this->threads = threads;
+    this->forumID = std::move(forumID);
+    this->titleID = std::move(titleID);
+    this->threads = std::move(threads);
 }
 
 void Forum::createInDatabase(::sql::Connection *con) {
