@@ -67,7 +67,7 @@ std::vector<std::string> Forum::getThreads(::sql::Connection *con) {
     stmt->execute("USE ece656project");
     res = stmt->executeQuery("SELECT thread_id FROM threads WHERE forum_id = \"" + this->forumID + "\"");
     while(res->next()) {
-        threads.push_back(res->getString("friend_id"));
+        threads.push_back(res->getString("thread_id"));
     }
     delete stmt;
     return threads;
