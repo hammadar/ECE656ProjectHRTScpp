@@ -18,7 +18,7 @@ void Thread::createInDatabase(::sql::Connection *con) {
     ::sql::Statement *stmt;
     std::string query;
     stmt = con->createStatement();
-    query = "INSERT INTO threads (thread_id, forum_id) VALUES (" + this->threadID + "," + this->forumID + ")";
+    query = "INSERT INTO threads (thread_id, forum_id) VALUES (\"" + this->threadID + "\", \"" + this->forumID + "\")";
     stmt->execute(query);
     if (!this->posts.empty()) {
 

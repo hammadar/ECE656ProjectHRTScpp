@@ -18,7 +18,8 @@ void Forum::createInDatabase(::sql::Connection *con) {
     ::sql::Statement *stmt;
     std::string query;
     stmt = con->createStatement();
-    query = "INSERT INTO forum (forum_id, titleID) VALUES (" + this->forumID + "," + this->titleID + ")";
+    query = "INSERT INTO forum (forum_id, titleID) VALUES (\"" + this->forumID + "\", \"" + this->titleID + "\")";
+	stmt->execute("USE ece656project");
     stmt->execute(query);
     if (!this->threads.empty()) {
 

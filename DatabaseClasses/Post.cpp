@@ -19,7 +19,8 @@ void Post::createInDatabase(::sql::Connection *con) {
     ::sql::Statement *stmt;
     std::string query;
     stmt = con->createStatement();
-    query = "INSERT INTO posts (post_id, thread_id, user_id, post) VALUES (" + this->postID + "," + this->threadID + "," + this->userID + "," + this->postText + ")";
+    query = "INSERT INTO posts (post_id, thread_id, user_id, post) VALUES (\"" + this->postID + "\", \"" + this->threadID + "\", \"" +
+        this->userID + "\", \"" + this->postText + "\")";
     stmt->execute(query);
 
 }
