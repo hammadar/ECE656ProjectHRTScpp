@@ -3,8 +3,9 @@
 //#include "DatabaseClasses/User.h"
 //#include "DatabaseClasses/Forum.h"
 //#include "DatabaseClasses/Thread.h"
-#include "DatabaseClasses/Post.h"
-#include "DatabaseHandling/forumsMaker.h"
+//#include "DatabaseClasses/Post.h"
+//#include "DatabaseHandling/forumsMaker.h"
+#include "UXNavigation/Navigation.h"
 #include <time.h>
 #include <ctime>
 
@@ -43,6 +44,10 @@ int main() {
     //Forum *moo = new Forum(forumID,titleID,threads);
     //Thread *moo = new Thread(threadID,forumID,posts);
     //Post *moo = new Post(postID,threadID,userID,postText);
+	auto *dbconn = new dataBaseConnection(NORMAL_IP, user, password);
+    
+	Navigation *nav = new Navigation(dbconn->getSQLConnection());
+	nav->mainUXHandle();
 
 
 

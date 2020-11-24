@@ -17,29 +17,31 @@
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
+#include "DatabaseHandling/credentialsGenerator.h"
 
 class Navigation {
     private:
         int currentLevel;
         std::string currentUser;
         ::sql::Connection *con;
+		CredentialsGenerator *credentialGen;
 
     public:
-        explicit Navigation(::sql::Connection *con);
+        explicit Navigation(::sql::Connection *connection);
         void mainUXHandle();
-        void login(std::string user);
+        void login(std::string userID);
         void registerUser();
         void showMainMenu();
         void showUserThreads();
         void showThreadPosts();
         void showUserPosts();
-        void search(std::string titleName);
-        void getRatings(std::string titleName);
-        void showForum(std::string titleID);
+        void search();
+        void getRatings();
+        void showForum();
         void showRecommendations();
         void showThread(std::string threadID);
         void postInThread(std::string threadID);
         void goToMainMenu();
-        void addFriend(std::string friendID);
+        void addFriend();
         void showFriends();
 };
