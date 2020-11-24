@@ -48,6 +48,8 @@ bool Post::checkDatabaseExistence(::sql::Connection *con) {
             return true;
         }
     }
+    delete stmt;
+    delete res;
     return false;
 
 }
@@ -62,6 +64,7 @@ std::string Post::getPostText(::sql::Connection *con) {
     post_text = res->getString("post");
     
     delete stmt;
+    delete res;
     return post_text;
 }
 

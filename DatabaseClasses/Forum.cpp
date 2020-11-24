@@ -24,6 +24,7 @@ void Forum::createInDatabase(::sql::Connection *con) {
     if (!this->threads.empty()) {
 
     }
+    delete stmt;
 
 }
 
@@ -56,6 +57,8 @@ bool Forum::checkDatabaseExistence(::sql::Connection *con) {
             return true;
         }
     }
+    delete stmt;
+    delete res;
     return false;
 
 }
@@ -71,6 +74,7 @@ std::vector<std::string> Forum::getThreads(::sql::Connection *con) {
         threads.push_back(res->getString("thread_id"));
     }
     delete stmt;
+    delete res;
     return threads;
 }
 

@@ -94,6 +94,8 @@ bool User::checkDatabaseExistence(::sql::Connection *con) {
             return true;
         }
     }
+    delete stmt;
+    delete res;
     return false;
 
 
@@ -110,6 +112,7 @@ std::vector<std::string> User::getFriends(::sql::Connection *con) {
         friends.push_back(res->getString("friend_id"));
     }
     delete stmt;
+    delete res;
     return friends;
 }
 

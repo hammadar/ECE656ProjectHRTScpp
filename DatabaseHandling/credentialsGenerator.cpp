@@ -55,6 +55,9 @@ long int CredentialsGenerator::getLastUsed(std::string table, ::sql::Connection 
                 }
             }
         }
+
     }
+    delete stmt;
+    delete res;
     return lastUsed;
 }

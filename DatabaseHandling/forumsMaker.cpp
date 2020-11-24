@@ -44,5 +44,6 @@ void forumsMaker::makeForums(::sql::Connection *con) {
 
         }
         delete stmt;
+        delete res;
     }
 }

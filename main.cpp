@@ -44,7 +44,7 @@ int main() {
     //Thread *moo = new Thread(threadID,forumID,posts);
     //Post *moo = new Post(postID,threadID,userID,postText);
 
-    auto *dbconn = new dataBaseConnection(NORMAL_IP, user, password);
+    auto *dbconn = new dataBaseConnection(LOCAL_IP, user, password);
     auto *fm = new forumsMaker("normal");
     fm->makeForums(dbconn->getSQLConnection());
 

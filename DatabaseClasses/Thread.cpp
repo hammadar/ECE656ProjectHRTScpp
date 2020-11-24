@@ -23,6 +23,7 @@ void Thread::createInDatabase(::sql::Connection *con) {
     if (!this->posts.empty()) {
 
     }
+    delete stmt;
 
 }
 
@@ -49,6 +50,8 @@ bool Thread::checkDatabaseExistence(::sql::Connection *con) {
             return true;
         }
     }
+    delete stmt;
+    delete res;
     return false;
 
 }
@@ -64,6 +67,7 @@ std::vector<std::string> Thread::getPosts(::sql::Connection *con) {
         posts.push_back(res->getString("post_id"));
     }
     delete stmt;
+    delete res;
     return posts;
 }
 
