@@ -27,5 +27,6 @@ class forumsMaker {
     public:
         forumsMaker(std::string mode);
         void makeForums(::sql::Connection *con);
+        void makeMissingForum(std::string titleID, ::sql::Connection *con);
 
 };

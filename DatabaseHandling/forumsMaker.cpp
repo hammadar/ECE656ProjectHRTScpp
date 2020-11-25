@@ -47,3 +47,7 @@ void forumsMaker::makeForums(::sql::Connection *con) {
         delete res;
     }
 }
+
+void forumsMaker::makeMissingForum(std::string titleID, ::sql::Connection *con) { //for making a forum if not there when a user wants to start a thread
+
+}
