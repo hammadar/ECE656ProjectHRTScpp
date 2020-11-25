@@ -7,10 +7,10 @@
 #include <set>
 #include <utility>
 
-Thread::Thread(std::string threadID, std::string forumID, std::vector<std::string> posts) {
+Thread::Thread(std::string threadID, std::string forumID) {
     this->threadID = std::move(threadID);
     this->forumID = std::move(forumID);
-    this->posts = std::move(posts);
+
 }
 
 void Thread::createInDatabase(::sql::Connection *con) {
@@ -20,9 +20,6 @@ void Thread::createInDatabase(::sql::Connection *con) {
     stmt = con->createStatement();
     query = "INSERT INTO threads (thread_id, forum_id) VALUES (\"" + this->threadID + "\", \"" + this->forumID + "\")";
     stmt->execute(query);
-    if (!this->posts.empty()) {
-
-    }
     delete stmt;
 
 }
@@ -56,20 +53,7 @@ bool Thread::checkDatabaseExistence(::sql::Connection *con) {
 
 }
 
-std::vector<std::string> Thread::getPosts(::sql::Connection *con) {
-    ::sql::Statement *stmt;
-    ::sql::ResultSet  *res;
-    stmt = con->createStatement();
-    posts = std::vector<std::string>();
-    stmt->execute("USE ece656project");
-    res = stmt->executeQuery("SELECT post_id FROM posts WHERE thread_id = \"" + this->threadID + "\"");
-    while(res->next()) {
-        posts.push_back(res->getString("post_id"));
-    }
-    delete stmt;
-    delete res;
-    return posts;
-}
+
 
 
 

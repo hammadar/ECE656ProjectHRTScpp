@@ -32,5 +32,6 @@ class Post: public socialNetworkBase {
         void updateInDatabase(::sql::Connection *con) override;
         bool checkDatabaseExistence(::sql::Connection *con) override;
         std::string getPostText(::sql::Connection *con);
+        void updatePostText(std::string text, ::sql::Connection *con);
 
 };

@@ -23,13 +23,11 @@ class Thread: public socialNetworkBase {
     private:
         std::string threadID;
         std::string forumID;
-        std::vector<std::string> posts;
 
     public:
-        Thread(std::string threadID, std::string forumID, std::vector<std::string> posts = std::vector<std::string>());
+        Thread(std::string threadID, std::string forumID);
         void createInDatabase(::sql::Connection *con) override;
         void updateInDatabase(::sql::Connection *con) override;
         bool checkDatabaseExistence(::sql::Connection *con) override;
-        std::vector<std::string> getPosts(::sql::Connection *con);
 
 };

@@ -22,7 +22,7 @@ void Forum::createInDatabase(::sql::Connection *con) {
 	stmt->execute("USE ece656project");
     stmt->execute(query);
     if (!this->threads.empty()) {
-
+        this->updateThreads(this->threads, con);
     }
     delete stmt;
 

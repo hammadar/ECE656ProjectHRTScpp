@@ -69,4 +69,6 @@ std::string Post::getPostText(::sql::Connection *con) {
 }
 
 
-
+void Post::updatePostText(std::string text, ::sql::Connection *con) {
+    //TS
+}
