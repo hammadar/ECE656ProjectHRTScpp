@@ -37,11 +37,12 @@ class Navigation {
         void showUserPosts();
         void search();
         void getRatings();
-        void showForum();
+        void showForum(std::string title);
         void showRecommendations();
         void showThread(std::string threadID);
         void postInThread(std::string threadID);
         void goToMainMenu();
         void addFriend();
         void showFriends();
+        void searchFriends(std::string userName);
 };

@@ -12,6 +12,8 @@
 Navigation::Navigation(::sql::Connection *connection) {
 	this->con = connection;
 	this->credentialGen = new CredentialsGenerator();
+	this->currentUser = "";
+	this->currentLevel = -1;
 }
 
 void Navigation::mainUXHandle() {
@@ -44,6 +46,7 @@ void Navigation::login(std::string userID) {
 	while(res->next()) {
 		if (res->getInt(1) == 1) {
 			std::cout << "Login successful" << std::endl;
+			this->currentUser = userID;
 			showMainMenu();
 		}
 		else{
@@ -142,7 +145,7 @@ void Navigation::showUserThreads() {
 
 }
 
-void Navigation::showThreadPosts() {
+void Navigation::showThreadPosts() { //might be redundant
 
 }
 
@@ -170,7 +173,7 @@ void Navigation::search() {
 		//DETERMINE WHAT INFO and HOW to display
 		std::cout << "Movie Title: " << res->getString("primaryTitle") << std::endl;
 		std::cout << "Genres: " << res->getString("genres") << std::endl;
-		
+		// HR - wait before going to main menu, or prompt before going back to main menu
 		showMainMenu();
 	}
 	
@@ -206,8 +209,8 @@ void Navigation::getRatings() {
 	delete res;
 }
 
-void Navigation::showForum() {
-
+void Navigation::showForum(std::string title) {
+    //HR
 }
 
 void Navigation::showRecommendations() {
@@ -215,22 +218,28 @@ void Navigation::showRecommendations() {
 }
 
 void Navigation::showThread(std::string threadID) {
-
+    //HR
 }
 
 void Navigation::postInThread(std::string threadID) {
-
+    //HR
 }
 
-void Navigation::goToMainMenu() {
+void Navigation::goToMainMenu() { //might be redundant
 
 }
 
 void Navigation::addFriend() {
-
+    //TS
 }
 
 void Navigation::showFriends() {
-
+    //TS
 }
+
+void Navigation::searchFriends(std::string userName) {
+    //TS
+}
+
+
 
