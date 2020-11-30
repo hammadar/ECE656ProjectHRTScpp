@@ -25,6 +25,8 @@ class Navigation {
         std::string currentUser;
         ::sql::Connection *con;
 		CredentialsGenerator *credentialGen;
+		std::vector<std::pair<std::string, std::string>> retrievedThreads;
+		std::vector<std::vector<std::string>> retrievedPosts;
 
     public:
         explicit Navigation(::sql::Connection *connection);

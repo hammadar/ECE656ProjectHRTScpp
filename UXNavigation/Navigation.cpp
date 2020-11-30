@@ -14,6 +14,8 @@ Navigation::Navigation(::sql::Connection *connection) {
 	this->credentialGen = new CredentialsGenerator();
 	this->currentUser = "";
 	this->currentLevel = -1;
+	this->retrievedThreads = std::vector<std::pair<std::string,std::string>>();
+	this->retrievedPosts = std::vector<std::vector<std::string>>();
 }
 
 void Navigation::mainUXHandle() {
@@ -108,6 +110,7 @@ void Navigation::showMainMenu() {
 	std::cout << "\t8. Add friend" << std::endl;
 	
 	int userInput;
+    std::string titleName;
 	
 	std::cin >> userInput;
 	
@@ -122,7 +125,9 @@ void Navigation::showMainMenu() {
 			search();
 			break;
 		case 4:
-			showForum();
+			std::cout << "Enter the name of the movie:" << std::endl;
+			std::cin >> titleName;
+		    showForum(titleName);
 			break;
 		case 5:
 			getRatings();
@@ -211,6 +216,66 @@ void Navigation::getRatings() {
 
 void Navigation::showForum(std::string title) {
     //HR
+    ::sql::Statement *stmt;
+    ::sql::ResultSet  *res;
+    std::string query;
+    std::string temptitleID;
+    std::string temptitle;
+    std::string tempForumID;
+    std::string forumID;
+    std::string tempThreadID;
+    std::string tempThreadTitle;
+    std::vector<std::pair<std::string,std::string>> titleVec;
+    std::vector<std::string> forumIDs;
+    stmt = con->createStatement();
+    this->retrievedThreads.clear();
+
+    query = "SELECT forum_id, titleID, primaryTitle FROM forum INNER JOIN titleBasics on forum.titleID = titleBasics.tconst where titleBasics.primaryTitle like \"" + title + "\"";
+    stmt->execute("use ece656project");
+    res = stmt->executeQuery(query);
+    int count = 0;
+    while (res->next()) {
+        temptitleID = res->getString("titleID");
+        temptitle = res->getString("primaryTitle");
+        tempForumID = res->getString("forum_id");
+        titleVec.push_back(std::pair<std::string, std::string>(temptitleID, temptitle));
+        forumIDs.push_back(tempForumID);
+        count++;
+    }
+    int selection = 0;
+    if (count>1) {
+        std::cout << "There are " << count << " matches for searched title " << title << ". Please specify which one:" << std::endl;
+        int counter = 1;
+            for (auto it = titleVec.begin(); it != titleVec.end(); it++) {
+                std::cout << counter << ". " << it->second << std::endl;
+            }
+        std::cin >> selection;
+        selection--;
+    }
+    forumID = forumIDs[selection];
+
+    query = "SELECT thread_id, title from threads where forum_id = " + forumID;
+    res = stmt->executeQuery(query);
+    int counter = 1;
+    while (res->next()) {
+        tempThreadID = res->getString("thread_id");
+        tempThreadTitle = res->getString("title");
+        retrievedThreads.push_back(std::pair<std::string,std::string>(tempThreadID, tempThreadTitle));
+        std::cout << counter << ". " << tempThreadTitle << std::endl;
+    }
+    int nextAction = 0;
+    std::cout << "Select thread number to view posts or type 0 to go to main menu: " << std::endl;
+    std::cin >> nextAction;
+
+    delete stmt;
+    delete res;
+
+    if (nextAction > 0) {
+        std::string threadID = retrievedThreads[nextAction-1].first;
+        this->showThread(threadID);
+    } else {
+        this->showMainMenu();
+    }
 }
 
 void Navigation::showRecommendations() {
@@ -219,10 +284,64 @@ void Navigation::showRecommendations() {
 
 void Navigation::showThread(std::string threadID) {
     //HR
+    ::sql::Statement *stmt;
+    ::sql::ResultSet  *res;
+    std::string query;
+    std::string tempPostID;
+    std::string tempuserID;
+    std::string tempPost;
+    std::vector<std::string> tempResults;
+    this->retrievedPosts.clear();
+    stmt = con->createStatement();
+
+    query = "SELECT post_id, user_id, post from posts where thread_id = \"" + threadID + "\"";
+    stmt->execute("use ece656project");
+    res = stmt->executeQuery(query);
+    int counter = 1;
+
+    while (res->next()) {
+        tempResults.clear();
+        tempPostID = res->getString("post_id");
+        tempuserID = res->getString("user_id");
+        tempPost = res->getString("post");
+        tempResults.push_back(tempPostID);
+        tempResults.push_back(tempuserID);
+        tempResults.push_back(tempPost);
+        this->retrievedPosts.push_back(tempResults);
+        std::cout << counter << ". By " << tempuserID << ": " << std::endl;
+        std::cout << "Text: " << tempPost << std::endl;
+        counter++;
+    }
+
+    delete res;
+    delete stmt;
+    bool add = false;
+
+    std::cout << "Do you want to add to this thread? Press 1 for yes, 0 for no" << std::endl;
+    std::cin >> add;
+
+    if (add) {
+        this->postInThread(threadID);
+    }
+    this->showMainMenu();
+
+
 }
 
 void Navigation::postInThread(std::string threadID) {
     //HR
+    ::sql::Statement *stmt;
+    std::string query;
+    std::string postText;
+    std::string postID;
+
+    std::cout << "Please enter your post below:" << std::endl;
+    std::cin >> postText;
+    postID = this->credentialGen->generateCredential("Post", this->con);
+    query = "insert into posts(post_id, thread_id, user_id, post) values (\"" + postID + "\", \"" + threadID +
+            "\", \"" + this->currentUser + "\",\"" + postText + "\")";
+    stmt->execute(query);
+    delete stmt;
 }
 
 void Navigation::goToMainMenu() { //might be redundant
