@@ -43,6 +43,7 @@ class Navigation {
         void showRecommendations();
         void showThread(std::string threadID);
         void postInThread(std::string threadID);
+        void makeThread(std::string forumID);
         void goToMainMenu();
         void addFriend();
         void showFriends();

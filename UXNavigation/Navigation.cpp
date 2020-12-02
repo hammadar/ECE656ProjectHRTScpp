@@ -5,6 +5,7 @@
 #include "Navigation.h"
 #include "DatabaseClasses/User.h"
 #include <string>
+#include <sstream>
 #include <time.h>
 #include <ctime>
 #include <boost/algorithm/string.hpp>
@@ -126,7 +127,9 @@ void Navigation::showMainMenu() {
 			break;
 		case 4:
 			std::cout << "Enter the name of the movie:" << std::endl;
-			std::cin >> titleName;
+			//std::istringstream ss(titleName);
+			std::cin.ignore();
+			getline(std::cin, titleName);
 		    showForum(titleName);
 			break;
 		case 5:
@@ -225,12 +228,15 @@ void Navigation::showForum(std::string title) {
     std::string forumID;
     std::string tempThreadID;
     std::string tempThreadTitle;
+    std::string threadID;
     std::vector<std::pair<std::string,std::string>> titleVec;
     std::vector<std::string> forumIDs;
+    int nextAction;
+    int counter;
     stmt = con->createStatement();
     this->retrievedThreads.clear();
 
-    query = "SELECT forum_id, titleID, primaryTitle FROM forum INNER JOIN titleBasics on forum.titleID = titleBasics.tconst where titleBasics.primaryTitle like \"" + title + "\"";
+    query = "SELECT forum_id, titleID, primaryTitle FROM forum INNER JOIN titleBasics on forum.titleID = titleBasics.tconst where titleBasics.primaryTitle = \"" + title + "\"";
     stmt->execute("use ece656project");
     res = stmt->executeQuery(query);
     int count = 0;
@@ -243,37 +249,80 @@ void Navigation::showForum(std::string title) {
         count++;
     }
     int selection = 0;
-    if (count>1) {
+    if (count == 0) { //need to make a forum for this title
+        std::string tempQuery = "SELECT tconst, primaryTitle from titleBasics where primaryTitle = \"" + title + "\"";
+        int tempcount = 0;
+        std::vector<std::pair<std::string,std::string>> tempTitleVec;
+        std::string temptconst;
+        std::string tempPrimaryTitle;
+        res = stmt->executeQuery(tempQuery);
+        tempTitleVec = std::vector<std::pair<std::string, std::string>>();
+        while (res->next()) {
+            temptconst = res->getString("tconst");
+            tempPrimaryTitle = res->getString("primaryTitle");
+            tempTitleVec.push_back(std::pair<std::string,std::string>(temptconst, tempPrimaryTitle));
+            tempcount++;
+        }
+        if (tempcount <1) {
+            std::cout << "No titles found with that name. Taking you back to main menu." << std::endl;
+            delete stmt;
+            delete res;
+            goto label;
+            } else if (tempcount>1) {
+            std::cout << "There are " << tempcount << " matches for searched title " << title << ". Please specify which one:" << std::endl;
+            int localcounter = 1;
+            for (auto it = tempTitleVec.begin(); it!= tempTitleVec.end(); it++) {
+                std::cout << localcounter << ". " << it->second << std::endl;
+                localcounter++;
+            }
+            std::cin >> selection;
+            selection--;
+        }
+        std::string newForumID = this->credentialGen->generateCredential("Forum", this->con);
+        std::string newTitleID = tempTitleVec[selection].first;
+        tempQuery = "insert into forum(forum_id, titleID) values (\"" + newForumID + "\",\"" + newTitleID + "\")";
+        forumIDs.push_back(newForumID);
+        stmt->execute(tempQuery);
+    } else if (count>1) {
         std::cout << "There are " << count << " matches for searched title " << title << ". Please specify which one:" << std::endl;
-        int counter = 1;
+        int localcounter = 1;
             for (auto it = titleVec.begin(); it != titleVec.end(); it++) {
-                std::cout << counter << ". " << it->second << std::endl;
+                std::cout << localcounter << ". " << it->second << std::endl;
+                localcounter++;
             }
         std::cin >> selection;
         selection--;
     }
     forumID = forumIDs[selection];
 
-    query = "SELECT thread_id, title from threads where forum_id = " + forumID;
+    query = "SELECT thread_id, forum_id, title from threads where forum_id = \"" + forumID + "\"";
     res = stmt->executeQuery(query);
-    int counter = 1;
+    counter = 1;
     while (res->next()) {
         tempThreadID = res->getString("thread_id");
         tempThreadTitle = res->getString("title");
         retrievedThreads.push_back(std::pair<std::string,std::string>(tempThreadID, tempThreadTitle));
         std::cout << counter << ". " << tempThreadTitle << std::endl;
+        counter++;
     }
-    int nextAction = 0;
-    std::cout << "Select thread number to view posts or type 0 to go to main menu: " << std::endl;
+    if (counter == 1) {
+        std::cout << "There are no threads in this forum for title " << title << std::endl;
+    }
+    nextAction = 0;
+    std::cout << "Select thread number to view posts or type 0 to go to main menu or -1 to make a new thread in this forum: " << std::endl;
     std::cin >> nextAction;
 
     delete stmt;
     delete res;
 
     if (nextAction > 0) {
-        std::string threadID = retrievedThreads[nextAction-1].first;
+        threadID = retrievedThreads[nextAction-1].first;
         this->showThread(threadID);
-    } else {
+    } else if (nextAction < 0){
+        this->makeThread(forumID);
+    }
+      else {
+        label:
         this->showMainMenu();
     }
 }
@@ -359,6 +408,34 @@ void Navigation::showFriends() {
 void Navigation::searchFriends(std::string userName) {
     //TS
 }
+
+void Navigation::makeThread(std::string forumID) {
+    ::sql::Statement *stmt;
+    std::string text;
+    std::string title;
+    std::string threadID;
+    std::string postID;
+    std::string query;
+
+    threadID = this->credentialGen->generateCredential("Thread", this->con);
+    postID = this->credentialGen->generateCredential("Post", this->con);
+
+    std::cout << "Enter the title of the first thread for this forum:" << std::endl;
+    std::cin.ignore();
+    getline(std::cin, title);
+    std::cout << "Enter the the first post for this forum:" << std::endl;
+    std::cin.ignore();
+    getline(std::cin, text);
+
+    query = "insert into threads(thread_id, forum_id, title) values (\"" + threadID + "\",\"" + forumID + "\",\"" + title + "\")";
+    stmt->execute(query);
+    query = "insert into posts(post_id, thread_id, user_id, post) values (\"" + postID + "\",\"" + threadID + "\",\"" + this->currentUser + "\",\"" + text + "\")";
+    stmt->execute(query);
+    delete stmt;
+
+}
+
+
 
 
 
