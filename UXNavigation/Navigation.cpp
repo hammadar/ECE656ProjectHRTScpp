@@ -430,7 +430,7 @@ void Navigation::makeThread(std::string forumID) {
     std::cin.ignore();
     getline(std::cin, title);
     std::cout << "Enter the the first post for this thread:" << std::endl;
-    std::cin.ignore();
+    //std::cin.ignore();
     getline(std::cin, text1);
 
     query = "insert into threads(thread_id, forum_id, title) values (\"" + threadID + "\",\"" + forumID + "\",\"" + title + "\")";
