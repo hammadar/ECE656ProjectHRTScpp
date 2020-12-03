@@ -9,6 +9,8 @@
 #include <time.h>
 #include <ctime>
 #include <boost/algorithm/string.hpp>
+#include <iostream>
+#include <sstream>
 
 Navigation::Navigation(::sql::Connection *connection) {
 	this->con = connection;
@@ -96,6 +98,8 @@ void Navigation::registerUser() {
 	
 	User *user = new User(userID, firstName, lastName, &birthDate, country, stateProvince, friends);
 	user->createInDatabase(con);
+	
+	mainUXHandle();
 }
 
 void Navigation::showMainMenu() {
@@ -109,6 +113,7 @@ void Navigation::showMainMenu() {
 	std::cout << "\t6. Get movie recommendations" << std::endl;
 	std::cout << "\t7. Show friends" << std::endl;
 	std::cout << "\t8. Add friend" << std::endl;
+	std::cout << "\t9. Log Out" << std::endl;
 	
 	int userInput;
     std::string titleName;
@@ -144,6 +149,9 @@ void Navigation::showMainMenu() {
 		case 8:
 			addFriend();
 			break;
+		case 9:
+			logOut();
+			break;
 		
 		
 	}	
@@ -164,7 +172,6 @@ void Navigation::showUserPosts() {
 void Navigation::search() {
 	::sql::Statement *stmt;
 	::sql::ResultSet  *res;
-	::sql::ResultSetMetaData *columnMetaData;
 	
 	std::string query;
 	stmt = con->createStatement();
@@ -173,7 +180,7 @@ void Navigation::search() {
 	std::cout << "Enter movie title: ";
 	std::cin >> title;
 
-	query = "select * from titleBasics where primaryTitle = \"" + title + "\" LIMIT 1";
+	query = "SELECT * FROM titleBasics WHERE primaryTitle = \"" + title + "\" LIMIT 1";
 	stmt->execute("USE ece656project");
 	res = stmt->executeQuery(query);
 
@@ -199,7 +206,7 @@ void Navigation::getRatings() {
 	
 	std::string title="";
 	std::cout << "Enter movie title: ";
-	std::cin >> title;
+	std::getline(std::cin >> std::ws, title);
 	
 	query = "SELECT averageRating AS Movie_Average_Rating FROM ratings\
 		INNER JOIN titleBasics ON ratings.tconst = titleBasics.tconst\
@@ -209,12 +216,21 @@ void Navigation::getRatings() {
 	
 	while(res->next()) {
 		std::cout << "Average rating for " << title << ": " << res->getString("Movie_Average_Rating") << std::endl;
+		delete stmt;
+		delete res;
+		
 		std::cout << std::endl;
 		showMainMenu();
 	}
 	
 	delete stmt;
 	delete res;
+	
+	std::cout << "Movie not in database" << std::endl;
+	std::cout << std::endl;
+	showMainMenu();
+	
+
 }
 
 void Navigation::showForum(std::string title) {
@@ -403,15 +419,90 @@ void Navigation::goToMainMenu() { //might be redundant
 }
 
 void Navigation::addFriend() {
-    //TS
+    ::sql::Statement *stmt;
+	
+	std::string query;
+	stmt = con->createStatement();
+	
+	std::string firstName = "";
+	std::string lastName = "";
+	std::string friendID = "";
+	
+	std::cout << "Enter full name of user you would like to add to your friends list: ";
+	std::cin >> firstName >> lastName;
+	
+	friendID = searchFriends(firstName,lastName);
+	
+	if(friendID != "NotFound"){	
+		query = "INSERT INTO connections (user_id, friend_id) VALUES (\"" + this->currentUser + "\", \"" + friendID + "\")";
+		stmt->execute("USE ece656project");
+		stmt->execute(query);
+		std::cout << "Added!" << std::endl;
+		std::cout << std::endl;
+		delete stmt;
+		showMainMenu();
+	}
+	else{
+		std::cout << "The user name you have entered does not exist" << std::endl;
+		std::cout << std::endl;
+		delete stmt;
+		showMainMenu();
+	}
 }
 
 void Navigation::showFriends() {
-    //TS
+	::sql::Statement *stmt;
+	::sql::ResultSet  *res;
+	
+	std::string friendID = "";
+	std::string query;
+	stmt = con->createStatement();
+	
+	query = "SELECT first_name,last_name FROM users\
+		INNER JOIN connections ON users.user_id = connections.friend_id\
+		WHERE connections.user_id = \"" + this->currentUser + "\"";
+	stmt->execute("USE ece656project");
+	res = stmt->executeQuery(query);
+
+	std::cout << std::endl;
+	while(res->next()) {
+		std::cout << res->getString("first_name") << " " << res->getString("last_name") << std::endl;
+	}
+	
+	delete stmt;
+	delete res;
+	
+	std::cout << std::endl;
+	showMainMenu();
 }
 
-void Navigation::searchFriends(std::string userName) {
-    //TS
+std::string Navigation::searchFriends(std::string firstName,std::string lastName) {
+	::sql::Statement *stmt;
+	::sql::ResultSet  *res;
+	
+	std::string friendID = "";
+	std::string query;
+	stmt = con->createStatement();
+	
+	query = "SELECT user_id FROM users WHERE first_name = \"" + firstName + "\" AND last_name = \"" + lastName + "\"";
+	stmt->execute("USE ece656project");
+	res = stmt->executeQuery(query);
+	
+	while(res->next()) {
+		friendID = res->getString("user_id");
+		delete stmt;
+	    delete res;
+		return friendID;
+	}
+	
+	delete stmt;
+	delete res;
+	
+	return "NotFound";
+}
+
+void Navigation::logOut() {
+	mainUXHandle();
 }
 
 void Navigation::makeThread(std::string forumID) {

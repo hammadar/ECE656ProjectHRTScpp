@@ -47,5 +47,6 @@ class Navigation {
         void goToMainMenu();
         void addFriend();
         void showFriends();
-        void searchFriends(std::string userName);
+        std::string searchFriends(std::string firstName,std::string lastName);
+		void logOut();
 };
