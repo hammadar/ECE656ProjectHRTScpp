@@ -36,7 +36,6 @@ class Navigation {
         void showMainMenu();
         void showUserThreads();
         void showThreadPosts();
-        void showUserPosts();
         void search();
         void getRatings();
         void showForum(std::string title);

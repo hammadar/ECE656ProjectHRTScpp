@@ -106,14 +106,13 @@ void Navigation::showMainMenu() {
 	
 	std::cout << "What would you like to do?" << std::endl;
 	std::cout << "\t1. Show threads you have participated in" << std::endl;
-	std::cout << "\t2. Show posts you have submitted" << std::endl;
-	std::cout << "\t3. Search movie info by title" << std::endl;
-	std::cout << "\t4. Find forums by title" << std::endl;
-	std::cout << "\t5. Find ratings of movies by title" << std::endl;
-	std::cout << "\t6. Get movie recommendations" << std::endl;
-	std::cout << "\t7. Show friends" << std::endl;
-	std::cout << "\t8. Add friend" << std::endl;
-	std::cout << "\t9. Log Out" << std::endl;
+	std::cout << "\t2. Search movie info by title" << std::endl;
+	std::cout << "\t3. Find forums by title" << std::endl;
+	std::cout << "\t4. Find ratings of movies by title" << std::endl;
+	std::cout << "\t5. Get movie recommendations" << std::endl;
+	std::cout << "\t6. Show friends" << std::endl;
+	std::cout << "\t7. Add friend" << std::endl;
+	std::cout << "\t8. Log Out" << std::endl;
 	
 	int userInput;
     std::string titleName;
@@ -125,31 +124,28 @@ void Navigation::showMainMenu() {
 			showUserThreads();
 			break;
 		case 2:
-			showUserPosts();
-			break;
-		case 3:
 			search();
 			break;
-		case 4:
+		case 3:
 			std::cout << "Enter the name of the movie:" << std::endl;
 			//std::istringstream ss(titleName);
 			std::cin.ignore();
 			getline(std::cin, titleName);
 		    showForum(titleName);
 			break;
-		case 5:
+		case 4:
 			getRatings();
 			break;
-		case 6:
+		case 5:
 			showRecommendations();
 			break;
-		case 7:
+		case 6:
 			showFriends();
 			break;
-		case 8:
+		case 7:
 			addFriend();
 			break;
-		case 9:
+		case 8:
 			logOut();
 			break;
 		
@@ -158,16 +154,49 @@ void Navigation::showMainMenu() {
 }
 
 void Navigation::showUserThreads() {
-
+    ::sql::Statement *stmt;
+    ::sql::ResultSet  *res;
+    std::string query;
+    std::vector<std::vector<std::string>> threads;
+    std::string tempThreadID;
+    std::string tempForumID;
+    std::string tempTitle;
+    int threadView;
+    int counter;
+    query = "select distinct threads.thread_id as thread_id, threads.forum_id as forum_id, threads.title as title from threads inner join"
+            " posts on threads.thread_id = posts.thread_id where posts.user_id = \"" + this->currentUser + "\"";
+    threads = std::vector<std::vector<std::string>>();
+    stmt = con->createStatement();
+    res = stmt->executeQuery(query);
+    counter = 1;
+    while (res->next()) {
+        std::vector<std::string> tempVec = std::vector<std::string>();
+        tempThreadID = res->getString("thread_id");
+        tempForumID = res->getString("forum_id");
+        tempTitle = res->getString("title");
+        tempVec.push_back(tempThreadID);
+        tempVec.push_back(tempForumID);
+        tempVec.push_back(tempTitle);
+        std::cout << counter << ". " << tempTitle << std::endl;
+        threads.push_back(tempVec);
+        counter++;
+    }
+    if (counter > 1) {
+        std::cout << "Select which thread to view:";
+        std::cin >> threadView;
+        threadView--;
+        std::vector<std::string> tempVec = threads[threadView];
+        this->showThread(tempVec[0]);
+    } else {
+        std::cout << "You are not participating in any threads." << std::endl;
+        this->showMainMenu();
+    }
 }
 
 void Navigation::showThreadPosts() { //might be redundant
 
 }
 
-void Navigation::showUserPosts() {
-
-}
 
 void Navigation::search() {
 	::sql::Statement *stmt;
