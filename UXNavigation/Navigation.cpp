@@ -318,8 +318,10 @@ void Navigation::showForum(std::string title) {
     if (nextAction > 0) {
         threadID = retrievedThreads[nextAction-1].first;
         this->showThread(threadID);
+        this->showMainMenu();
     } else if (nextAction < 0){
         this->makeThread(forumID);
+        this->showMainMenu();
     }
       else {
         label:
@@ -383,14 +385,17 @@ void Navigation::postInThread(std::string threadID) {
     std::string query;
     std::string postText;
     std::string postID;
+    stmt = con->createStatement();
 
     std::cout << "Please enter your post below:" << std::endl;
-    std::cin >> postText;
+    std::cin.ignore();
+    getline(std::cin, postText);
     postID = this->credentialGen->generateCredential("Post", this->con);
     query = "insert into posts(post_id, thread_id, user_id, post) values (\"" + postID + "\", \"" + threadID +
             "\", \"" + this->currentUser + "\",\"" + postText + "\")";
     stmt->execute(query);
     delete stmt;
+
 }
 
 void Navigation::goToMainMenu() { //might be redundant
@@ -411,7 +416,7 @@ void Navigation::searchFriends(std::string userName) {
 
 void Navigation::makeThread(std::string forumID) {
     ::sql::Statement *stmt;
-    std::string text;
+    std::string text1;
     std::string title;
     std::string threadID;
     std::string postID;
@@ -419,19 +424,22 @@ void Navigation::makeThread(std::string forumID) {
 
     threadID = this->credentialGen->generateCredential("Thread", this->con);
     postID = this->credentialGen->generateCredential("Post", this->con);
+    stmt = con->createStatement();
 
-    std::cout << "Enter the title of the first thread for this forum:" << std::endl;
+    std::cout << "Enter the title of the thread:" << std::endl;
     std::cin.ignore();
     getline(std::cin, title);
-    std::cout << "Enter the the first post for this forum:" << std::endl;
+    std::cout << "Enter the the first post for this thread:" << std::endl;
     std::cin.ignore();
-    getline(std::cin, text);
+    getline(std::cin, text1);
 
     query = "insert into threads(thread_id, forum_id, title) values (\"" + threadID + "\",\"" + forumID + "\",\"" + title + "\")";
     stmt->execute(query);
-    query = "insert into posts(post_id, thread_id, user_id, post) values (\"" + postID + "\",\"" + threadID + "\",\"" + this->currentUser + "\",\"" + text + "\")";
+    query = "insert into posts(post_id, thread_id, user_id, post) values (\"" + postID + "\",\"" + threadID + "\",\"" + this->currentUser + "\",\"" + text1 + "\")";
+    std::cout << query << std::endl;
     stmt->execute(query);
     delete stmt;
+    this->showMainMenu();
 
 }
 
