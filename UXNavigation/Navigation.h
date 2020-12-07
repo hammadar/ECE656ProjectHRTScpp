@@ -42,9 +42,14 @@ class Navigation {
         void showRecommendations();
         void showThread(std::string threadID);
         void postInThread(std::string threadID);
+		void deletePostInThread(std::string threadID,std::map<int,std::string> post_id_mapping);
         void makeThread(std::string forumID);
+		void deletePost(std::string postID);
+		void rateMovie();
+		void showPersonalRatings();
 
         void addFriend();
+		void deleteFriend();
         void showFriends();
         std::string searchFriends(std::string firstName,std::string lastName);
 		void logOut();
