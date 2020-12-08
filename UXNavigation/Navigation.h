@@ -35,7 +35,7 @@ class Navigation {
         void registerUser();
         void showMainMenu();
         void showUserThreads();
-        void showThreadPosts();
+
         void search();
         void getRatings();
         void showForum(std::string title);
@@ -43,7 +43,7 @@ class Navigation {
         void showThread(std::string threadID);
         void postInThread(std::string threadID);
         void makeThread(std::string forumID);
-        void goToMainMenu();
+
         void addFriend();
         void showFriends();
         std::string searchFriends(std::string firstName,std::string lastName);

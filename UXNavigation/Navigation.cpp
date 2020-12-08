@@ -193,9 +193,6 @@ void Navigation::showUserThreads() {
     }
 }
 
-void Navigation::showThreadPosts() { //might be redundant
-
-}
 
 
 void Navigation::search() {
@@ -443,9 +440,6 @@ void Navigation::postInThread(std::string threadID) {
 
 }
 
-void Navigation::goToMainMenu() { //might be redundant
-
-}
 
 void Navigation::addFriend() {
     ::sql::Statement *stmt;
@@ -563,6 +557,13 @@ void Navigation::makeThread(std::string forumID) {
 
 }
 
+/*
+ * do: delete friends
+ * delete your own posts
+ * in showThread, show user name in addition to user id
+ * User: add ability to rate movies, this ties in to recommendations
+ * Recommendations: do mean variance of user ratings from average rating, use that as reference to estimate movies they would like
+ */
 
 
 
