@@ -20,7 +20,7 @@ link_directories(/usr/lib/x86_64-linux-gnu)
 find_package(Threads REQUIRED)
 find_library(MYSQL_LIBS NAMES libmysqlcppconn.so  REQUIRED)
 find_library(BOOST_LIBS NAMES libboost_date_time.so REQUIRED)
-add_executable(${PROJECT_NAME} main.cpp DatabaseHandling/databaseConnection.h DatabaseHandling/databaseConnection.cpp DatabaseClasses/socialNetworkBase.h DatabaseClasses/User.cpp DatabaseClasses/User.h Utility/setHandling.cpp Utility/setHandling.h DatabaseClasses/Forum.cpp DatabaseClasses/Forum.h DatabaseHandling/credentialsGenerator.cpp DatabaseHandling/credentialsGenerator.h DatabaseHandling/forumsMaker.cpp DatabaseHandling/forumsMaker.h UXNavigation/Navigation.h UXNavigation/Navigation.cpp)
+add_executable(${PROJECT_NAME} main.cpp DatabaseHandling/databaseConnection.h DatabaseHandling/databaseConnection.cpp DatabaseClasses/socialNetworkBase.h DatabaseClasses/User.cpp DatabaseClasses/User.h Utility/setHandling.cpp Utility/setHandling.h DatabaseClasses/Forum.cpp DatabaseClasses/Forum.h DatabaseHandling/credentialsGenerator.cpp DatabaseHandling/credentialsGenerator.h DatabaseHandling/forumsMaker.cpp DatabaseHandling/forumsMaker.h UXNavigation/Navigation.h UXNavigation/Navigation.cpp DatabaseHandling/recommendationEngine.cpp DatabaseHandling/recommendationEngine.h)
 target_link_libraries(${PROJECT_NAME} ${MYSQL_LIBS} ${BOOST_LIBS} Threads::Threads)
 
 
