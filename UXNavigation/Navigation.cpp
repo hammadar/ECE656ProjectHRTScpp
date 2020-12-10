@@ -10,6 +10,7 @@
 #include <ctime>
 #include <boost/algorithm/string.hpp>
 #include <iostream>
+#include "DatabaseHandling/recommendationEngine.h"
 #include <sstream>
 #include <map>
 
@@ -384,7 +385,9 @@ void Navigation::showForum(std::string title) {
 }
 
 void Navigation::showRecommendations() {
-
+    auto *recEng = new RecommendationEngine();
+    recEng->getRecommendations(this->currentUser, this->con);
+    this->showMainMenu();
 }
 
 void Navigation::showThread(std::string threadID) {
