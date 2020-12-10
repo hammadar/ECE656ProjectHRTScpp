@@ -6,7 +6,7 @@
 #include <string>
 #include <set>
 #include <sstream>
-#include <iostream>>
+#include <iostream>
 
 
 RecommendationEngine::RecommendationEngine() {
@@ -27,19 +27,33 @@ void RecommendationEngine::getRecommendations(std::string userID, ::sql::Connect
     stmt->execute("use ece656project");
     ratingsRange = this->getRatingRange(userID, con);
     categories = this->getUserCategories(userID, con);
-    for (auto it = categories.begin(); it != categories.end(); it++) {
+    if (categories.empty()) {
         query = "select primaryTitle from titleBasics inner join ratings on titleBasics.tconst = ratings.tconst where "
-                "averageRating between " + std::to_string(ratingsRange.first) + " and "
-                + std::to_string(ratingsRange.second) + "order by rand() limit 10";
+                "averageRating between 9.0 and 10.0 order by rand() limit 10";
         res = stmt->executeQuery(query);
         while (res->next()) {
             temp = res->getString("primaryTitle");
             std::cout << counter << ". " << temp << std::endl;
             counter++;
         }
+    }
+    else {
+        for (auto it = categories.begin(); it != categories.end(); it++) {
+            query = "select primaryTitle from titleBasics inner join ratings on titleBasics.tconst = ratings.tconst where "
+                    "averageRating between " + std::to_string(ratingsRange.first) + " and "
+                    + std::to_string(ratingsRange.second) + "order by rand() limit 10";
+            res = stmt->executeQuery(query);
+            while (res->next()) {
+                temp = res->getString("primaryTitle");
+                std::cout << counter << ". " << temp << std::endl;
+                counter++;
+            }
 
+        }
     }
 
+    delete stmt;
+    delete res;
 }
 
 std::vector<std::pair<std::string, float>>
@@ -105,12 +119,17 @@ std::pair<float, float> RecommendationEngine::getRatingRange(std::string userID,
     int count = 0;
     float total = 0;
     devianceMap = {
-            {5, std::pair<float, float>(0.0, 1.0)},
-            {4, std::pair<float, float>(0.5, 1.5)},
-            {3, std::pair<float, float>(1.0, 2.0)},
-            {2, std::pair<float, float>(2.0, 3.0)},
-            {1, std::pair<float, float>(3.0, 4.0)},
-            {0, std::pair<float, float>(4.0, 5.0)},
+            {5, std::pair<float, float>(4.0, 5.0)},
+            {4, std::pair<float, float>(5.0, 6.0)},
+            {3, std::pair<float, float>(6.0, 7.0)},
+            {2, std::pair<float, float>(7.0, 8.0)},
+            {1, std::pair<float, float>(8.0, 9.0)},
+            {0, std::pair<float, float>(9.0, 10.0)},
+            {6, std::pair<float,float>(3.0,4.0)},
+            {7, std::pair<float, float>(2.0, 3.0)},
+            {8, std::pair<float, float>(1.5, 2.0)},
+            {9, std::pair<float, float>(0.5, 1.5)},
+            {10, std::pair<float, float>(0.0, 0.5)}
     };
 
     deviations = this->getUserDeviations(userID, con);
@@ -143,7 +162,7 @@ std::vector<std::string> RecommendationEngine::getUserCategories(std::string use
             genres.insert(token);
         }
     }
-    std::copy(genres.begin(), genres.end(), genVec.begin());
+    std::copy(genres.begin(), genres.end(), std::back_inserter(genVec));
     delete stmt;
     delete res;
     return genVec;
