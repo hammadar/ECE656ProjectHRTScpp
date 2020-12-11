@@ -12,6 +12,7 @@
 #include <iostream>
 #include "DatabaseHandling/recommendationEngine.h"
 #include <sstream>
+#include <map>
 
 Navigation::Navigation(::sql::Connection *connection) {
 	this->con = connection;
@@ -113,7 +114,10 @@ void Navigation::showMainMenu() {
 	std::cout << "\t5. Get movie recommendations" << std::endl;
 	std::cout << "\t6. Show friends" << std::endl;
 	std::cout << "\t7. Add friend" << std::endl;
-	std::cout << "\t8. Log Out" << std::endl;
+	std::cout << "\t8. Delete friend" << std::endl;
+	std::cout << "\t9. Rate a movie" << std::endl;
+	std::cout << "\t10. Show personal ratings" << std::endl;
+	std::cout << "\t11. Log Out" << std::endl;
 	
 	int userInput;
     std::string titleName;
@@ -147,10 +151,20 @@ void Navigation::showMainMenu() {
 			addFriend();
 			break;
 		case 8:
+			deleteFriend();
+			break;
+		case 9:
+			rateMovie();
+			break;
+		case 10:
+			showPersonalRatings();
+			break;
+		case 11:
 			logOut();
 			break;
-		
-		
+		default:
+			showMainMenu();
+			break;	
 	}	
 }
 
@@ -221,8 +235,6 @@ void Navigation::search() {
 	
 	delete stmt;
 	delete res;
-	
-
 }
 
 void Navigation::getRatings() {
@@ -379,53 +391,68 @@ void Navigation::showRecommendations() {
 }
 
 void Navigation::showThread(std::string threadID) {
-    //HR
     ::sql::Statement *stmt;
     ::sql::ResultSet  *res;
     std::string query;
     std::string tempPostID;
-    std::string tempuserID;
+    std::string tempUserFirstName;
+	std::string tempUserLastName;
     std::string tempPost;
     std::vector<std::string> tempResults;
+	std::map<int,std::string> post_id_mapping;
+	
     this->retrievedPosts.clear();
     stmt = con->createStatement();
 
-    query = "SELECT post_id, user_id, post from posts where thread_id = \"" + threadID + "\"";
+    query = "SELECT post_id, users.first_name, users.last_name, post FROM posts JOIN users ON posts.user_id = users.user_id WHERE thread_id = \"" + threadID + "\"";
     stmt->execute("use ece656project");
     res = stmt->executeQuery(query);
     int counter = 1;
+	
+	std::cout << std::endl;
+	std::cout << "Posts in Thread: " << std::endl;
 
     while (res->next()) {
         tempResults.clear();
         tempPostID = res->getString("post_id");
-        tempuserID = res->getString("user_id");
+        tempUserFirstName = res->getString("first_name");
+		tempUserLastName = res->getString("last_name");
         tempPost = res->getString("post");
         tempResults.push_back(tempPostID);
-        tempResults.push_back(tempuserID);
+        tempResults.push_back(tempUserFirstName);
+		tempResults.push_back(tempUserLastName);
         tempResults.push_back(tempPost);
         this->retrievedPosts.push_back(tempResults);
-        std::cout << counter << ". By " << tempuserID << ": " << std::endl;
+		post_id_mapping[counter] = tempPostID;
+        std::cout << counter << ". By " << tempUserFirstName << " " << tempUserLastName << ": " << std::endl;
         std::cout << "Text: " << tempPost << std::endl;
         counter++;
     }
 
     delete res;
     delete stmt;
-    bool add = false;
+    int userInput;
 
-    std::cout << "Do you want to add to this thread? Press 1 for yes, 0 for no" << std::endl;
-    std::cin >> add;
-
-    if (add) {
-        this->postInThread(threadID);
-    }
-    this->showMainMenu();
-
-
+    std::cout << "Please select next action: Add to Thread (1) , Delete Post from Thread (2) , Return to Main Menu (3)" << std::endl;
+    std::cin >> userInput;
+	
+	switch (userInput) {
+		case 1:
+			this->postInThread(threadID);
+			break;
+		case 2:
+			this->deletePostInThread(threadID,post_id_mapping);
+			break;
+		case 3:
+			this->showMainMenu();
+			break;
+		default:
+			showMainMenu();
+			break;
+	}   
 }
 
 void Navigation::postInThread(std::string threadID) {
-    //HR
     ::sql::Statement *stmt;
     std::string query;
     std::string postText;
@@ -440,9 +467,29 @@ void Navigation::postInThread(std::string threadID) {
             "\", \"" + this->currentUser + "\",\"" + postText + "\")";
     stmt->execute(query);
     delete stmt;
+	
+	showMainMenu();
 
 }
 
+void Navigation::deletePostInThread(std::string threadID,std::map<int,std::string> post_id_mapping) {
+    ::sql::Statement *stmt;
+    std::string query;
+    int post_num;
+    stmt = con->createStatement();
+
+    std::cout << "Please enter post number you would like to remove:" << std::endl;
+    std::cin >> post_num;
+    
+    query = "DELETE FROM posts WHERE user_id =\"" + this->currentUser + "\" AND thread_id = \"" + threadID + "\" AND post_id = \"" + post_id_mapping[post_num] + "\"";
+    stmt->execute(query);
+    delete stmt;
+	
+	std::cout << "Deleted!" << std::endl;
+	std::cout << std::endl;
+	
+	showMainMenu();
+}
 
 void Navigation::addFriend() {
     ::sql::Statement *stmt;
@@ -497,6 +544,60 @@ void Navigation::showFriends() {
 	
 	delete stmt;
 	delete res;
+	
+	std::cout << std::endl;
+	showMainMenu();
+}
+
+void Navigation::deleteFriend() {
+	::sql::Statement *stmt;
+	::sql::ResultSet  *res;
+	
+	std::string friendID = "";
+	std::string query;
+	stmt = con->createStatement();
+	
+	query = "SELECT first_name,last_name FROM users\
+		INNER JOIN connections ON users.user_id = connections.friend_id\
+		WHERE connections.user_id = \"" + this->currentUser + "\"";
+	stmt->execute("USE ece656project");
+	res = stmt->executeQuery(query);
+	
+	std::cout << "Current friends:" << std::endl;
+
+	std::cout << std::endl;
+	while(res->next()) {
+		std::cout << res->getString("first_name") << " " << res->getString("last_name") << std::endl;
+	}
+	
+	delete res;
+	
+	stmt = con->createStatement();
+	
+	std::string firstName = "";
+	std::string lastName = "";
+	
+	std::cout << std::endl;
+	std::cout << "Enter full name of user you would like to remove from your friends list:" << std::endl;
+	std::cin >> firstName >> lastName;
+	
+	friendID = searchFriends(firstName,lastName);
+	
+	if(friendID != "NotFound"){	
+		query = "DELETE FROM connections WHERE user_id =\"" + this->currentUser + "\" AND friend_id = \"" + friendID + "\"";
+		stmt->execute("USE ece656project");
+		stmt->execute(query);
+		std::cout << "Deleted!" << std::endl;
+		std::cout << std::endl;
+		delete stmt;
+		showMainMenu();
+	}
+	else{
+		std::cout << "The user name you have entered does not exist" << std::endl;
+		std::cout << std::endl;
+		delete stmt;
+		showMainMenu();
+	}
 	
 	std::cout << std::endl;
 	showMainMenu();
@@ -558,6 +659,72 @@ void Navigation::makeThread(std::string forumID) {
     delete stmt;
     this->showMainMenu();
 
+}
+
+void Navigation::rateMovie() {
+    ::sql::Statement *stmt;
+	::sql::ResultSet  *res;
+	
+	std::string query;
+	stmt = con->createStatement();
+	
+	std::string title = "";
+	std::string rating  = "";
+	std::string title_id = "";
+	
+	std::cout << "Enter name of movie you would like to rate: ";
+	std::getline(std::cin >> std::ws, title);
+	
+	query = "SELECT * FROM titleBasics WHERE primaryTitle = \"" + title + "\" LIMIT 1";
+	stmt->execute("USE ece656project");
+	res = stmt->executeQuery(query);
+
+	while(res->next()) {
+
+		title_id = res->getString("tconst");
+		
+		std::cout << "What rating (out of 10.0) would you like to give: "<< title << std::endl;
+		std::cin >> rating;
+		
+		query = "INSERT INTO userRatings (user_id, titleID, rating) VALUES (\"" + this->currentUser + "\", \"" + title_id +  "\", \"" + rating + "\")";
+		stmt->execute("USE ece656project");
+		std::cout << query << std::endl;
+		stmt->execute(query);
+		std::cout << "Added!" << std::endl;
+		std::cout << std::endl;
+		delete stmt;
+		showMainMenu();
+	}
+	
+	std::cout << "The movie you have entered does not exist in this database" << std::endl;
+	std::cout << std::endl;
+	delete stmt;
+	showMainMenu();
+	
+}
+
+void Navigation::showPersonalRatings() {
+	::sql::Statement *stmt;
+	::sql::ResultSet  *res;
+	
+	std::string query;
+	stmt = con->createStatement();
+	
+	query = "SELECT titleBasics.primaryTitle,rating FROM userRatings INNER JOIN titleBasics ON userRatings.titleID = titleBasics.tconst";
+	stmt->execute("USE ece656project");
+	res = stmt->executeQuery(query);
+
+	std::cout << std::endl;
+
+	while(res->next()) {
+		std::cout << res->getString("primaryTitle") << "|" << res->getString("rating") << std::endl;
+	}
+	
+	delete stmt;
+	delete res;
+	
+	std::cout << std::endl;
+	showMainMenu();
 }
 
 /*
