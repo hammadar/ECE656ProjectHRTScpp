@@ -31,6 +31,7 @@ void RecommendationEngine::getRecommendations(std::string userID, ::sql::Connect
         query = "select primaryTitle from titleBasics inner join ratings on titleBasics.tconst = ratings.tconst where "
                 "averageRating between 9.0 and 10.0 order by rand() limit 10";
         res = stmt->executeQuery(query);
+        std::cout << "Based on your previous ratings, we think you may like the following titles:" << std::endl;
         while (res->next()) {
             temp = res->getString("primaryTitle");
             std::cout << counter << ". " << temp << std::endl;
@@ -43,6 +44,7 @@ void RecommendationEngine::getRecommendations(std::string userID, ::sql::Connect
                     "averageRating between " + std::to_string(ratingsRange.first) + " and "
                     + std::to_string(ratingsRange.second) + "order by rand() limit 10";
             res = stmt->executeQuery(query);
+            std::cout << "Based on your previous ratings, we think you may like the following titles:" << std::endl;
             while (res->next()) {
                 temp = res->getString("primaryTitle");
                 std::cout << counter << ". " << temp << std::endl;

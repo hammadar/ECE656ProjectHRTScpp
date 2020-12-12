@@ -529,6 +529,7 @@ void Navigation::addFriend() {
 void Navigation::showFriends() {
 	::sql::Statement *stmt;
 	::sql::ResultSet  *res;
+	int counter = 0;
 	
 	std::string friendID = "";
 	std::string query;
@@ -543,8 +544,12 @@ void Navigation::showFriends() {
 	std::cout << std::endl;
 	while(res->next()) {
 		std::cout << res->getString("first_name") << " " << res->getString("last_name") << std::endl;
+		counter++;
 	}
-	
+
+	if (counter == 0) {
+	    std::cout << "You have no friends :(" << std::endl;
+	}
 	delete stmt;
 	delete res;
 	
@@ -657,7 +662,7 @@ void Navigation::makeThread(std::string forumID) {
     query = "insert into threads(thread_id, forum_id, title) values (\"" + threadID + "\",\"" + forumID + "\",\"" + title + "\")";
     stmt->execute(query);
     query = "insert into posts(post_id, thread_id, user_id, post) values (\"" + postID + "\",\"" + threadID + "\",\"" + this->currentUser + "\",\"" + text1 + "\")";
-    std::cout << query << std::endl;
+    //std::cout << query << std::endl;
     stmt->execute(query);
     delete stmt;
     this->showMainMenu();
@@ -667,6 +672,7 @@ void Navigation::makeThread(std::string forumID) {
 void Navigation::rateMovie() {
     ::sql::Statement *stmt;
 	::sql::ResultSet  *res;
+	int counter = 0;
 	
 	std::string query;
 	stmt = con->createStatement();
@@ -691,15 +697,18 @@ void Navigation::rateMovie() {
 		
 		query = "INSERT INTO userRatings (user_id, titleID, rating) VALUES (\"" + this->currentUser + "\", \"" + title_id +  "\", \"" + rating + "\")";
 		stmt->execute("USE ece656project");
-		std::cout << query << std::endl;
+		//std::cout << query << std::endl;
 		stmt->execute(query);
 		std::cout << "Added!" << std::endl;
 		std::cout << std::endl;
-		delete stmt;
-		showMainMenu();
+		counter++;
+
 	}
-	
-	std::cout << "The movie you have entered does not exist in this database" << std::endl;
+
+	if (counter == 0) {
+        std::cout << "The movie you have entered does not exist in this database" << std::endl;
+	}
+
 	std::cout << std::endl;
 	delete stmt;
 	showMainMenu();
@@ -720,7 +729,7 @@ void Navigation::showPersonalRatings() {
 	std::cout << std::endl;
 
 	while(res->next()) {
-		std::cout << res->getString("primaryTitle") << "|" << res->getString("rating") << std::endl;
+		std::cout << res->getString("primaryTitle") << ": " << res->getString("rating") << std::endl;
 	}
 	
 	delete stmt;
