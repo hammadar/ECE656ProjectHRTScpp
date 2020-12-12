@@ -230,11 +230,14 @@ void Navigation::search() {
 		std::cout << "Movie Title: " << res->getString("primaryTitle") << std::endl;
 		std::cout << "Genres: " << res->getString("genres") << std::endl;
 		// HR - wait before going to main menu, or prompt before going back to main menu
-		showMainMenu();
+
 	}
+
+
 	
 	delete stmt;
 	delete res;
+    showMainMenu();
 }
 
 void Navigation::getRatings() {

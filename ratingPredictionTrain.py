@@ -35,7 +35,7 @@ if __name__ == '__main__':
     df = pd.read_sql(query, con=cnx)
     #df["nconst"] = df["nconst"].apply(lambda x: x.lstrip("nm"))
     #df["tconst"] = df["tconst"].apply(lambda x: x.lstrip("tt"))
-    df = df.sample(10000)
+    df = df.sample(20000)
     df.dropna(inplace=True)
     #df.set_index("tconst", inplace=True)
     #y = df["averageRating"]
