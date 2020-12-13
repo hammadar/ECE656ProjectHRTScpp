@@ -149,7 +149,7 @@ CREATE TABLE `actorTitles` (
   `nconst` varchar(255) NOT NULL,
   `tconst` varchar(255) NOT NULL,
   PRIMARY KEY (`nconst`,`tconst`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+) ;
 
 
 
