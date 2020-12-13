@@ -219,18 +219,16 @@ void Navigation::search() {
 	
 	std::string title="";
 	std::cout << "Enter movie title: ";
-	std::cin >> title;
+	std::getline(std::cin >> std::ws, title);
 
 	query = "SELECT * FROM titleBasics WHERE primaryTitle = \"" + title + "\" LIMIT 1";
 	stmt->execute("USE ece656project");
 	res = stmt->executeQuery(query);
 
 	while(res->next()) {
-		//DETERMINE WHAT INFO and HOW to display
 		std::cout << "Movie Title: " << res->getString("primaryTitle") << std::endl;
 		std::cout << "Genres: " << res->getString("genres") << std::endl;
-		// HR - wait before going to main menu, or prompt before going back to main menu
-
+		std::cout << "Release Date: " << res->getString("startYear") << std::endl;
 	}
 
 
@@ -276,7 +274,6 @@ void Navigation::getRatings() {
 }
 
 void Navigation::showForum(std::string title) {
-    //HR
     ::sql::Statement *stmt;
     ::sql::ResultSet  *res;
     std::string query;
@@ -738,15 +735,3 @@ void Navigation::showPersonalRatings() {
 	std::cout << std::endl;
 	showMainMenu();
 }
-
-/*
- * do: delete friends
- * delete your own posts
- * in showThread, show user name in addition to user id
- * User: add ability to rate movies, this ties in to recommendations
- * Recommendations: do mean variance of user ratings from average rating, use that as reference to estimate movies they would like
- */
-
-
-
-
