@@ -40,6 +40,7 @@ void RecommendationEngine::getRecommendations(std::string userID, ::sql::Connect
     }
     else {
         std::cout << "Based on your previous ratings, we think you may like the following titles:" << std::endl;
+        std::cout << std::endl;
         for (auto it = categories.begin(); it != categories.end(); it++) {
             query = "select primaryTitle from titleBasics inner join ratings on titleBasics.tconst = ratings.tconst where "
                     "averageRating between " + std::to_string(ratingsRange.first) + " and "

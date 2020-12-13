@@ -136,6 +136,7 @@ void Navigation::showMainMenu() {
 			//std::istringstream ss(titleName);
 			std::cin.ignore();
 			getline(std::cin, titleName);
+			std::cout << std::endl;
 		    showForum(titleName);
 			break;
 		case 4:
@@ -197,13 +198,16 @@ void Navigation::showUserThreads() {
         counter++;
     }
     if (counter > 1) {
+        std::cout << std::endl;
         std::cout << "Select which thread to view:";
         std::cin >> threadView;
         threadView--;
         std::vector<std::string> tempVec = threads[threadView];
         this->showThread(tempVec[0]);
     } else {
+        std::cout << std::endl;
         std::cout << "You are not participating in any threads." << std::endl;
+        std::cout << std::endl;
         this->showMainMenu();
     }
 }
@@ -217,6 +221,7 @@ void Navigation::search() {
 	std::string query;
 	stmt = con->createStatement();
 	
+	std::cout << std::endl;
 	std::string title="";
 	std::cout << "Enter movie title: ";
 	std::getline(std::cin >> std::ws, title);
@@ -226,9 +231,11 @@ void Navigation::search() {
 	res = stmt->executeQuery(query);
 
 	while(res->next()) {
+		std::cout << std::endl;
 		std::cout << "Movie Title: " << res->getString("primaryTitle") << std::endl;
 		std::cout << "Genres: " << res->getString("genres") << std::endl;
 		std::cout << "Release Date: " << res->getString("startYear") << std::endl;
+		std::cout << std::endl;
 	}
 
 
@@ -255,6 +262,7 @@ void Navigation::getRatings() {
 	res = stmt->executeQuery(query);
 	
 	while(res->next()) {
+		std::cout << std::endl;
 		std::cout << "Average rating for " << title << ": " << res->getString("Movie_Average_Rating") << std::endl;
 		delete stmt;
 		delete res;
@@ -319,6 +327,7 @@ void Navigation::showForum(std::string title) {
             tempcount++;
         }
         if (tempcount <1) {
+            std::cout << std::endl;
             std::cout << "No titles found with that name. Taking you back to main menu." << std::endl;
             delete stmt;
             delete res;
@@ -339,6 +348,7 @@ void Navigation::showForum(std::string title) {
         forumIDs.push_back(newForumID);
         stmt->execute(tempQuery);
     } else if (count>1) {
+        std::cout << std::endl;
         std::cout << "There are " << count << " matches for searched title " << title << ". Please specify which one:" << std::endl;
         int localcounter = 1;
             for (auto it = titleVec.begin(); it != titleVec.end(); it++) {
@@ -353,6 +363,8 @@ void Navigation::showForum(std::string title) {
     query = "SELECT thread_id, forum_id, title from threads where forum_id = \"" + forumID + "\"";
     res = stmt->executeQuery(query);
     counter = 1;
+    std::cout << std::endl;
+    std::cout << "Forums:" << std::endl;
     while (res->next()) {
         tempThreadID = res->getString("thread_id");
         tempThreadTitle = res->getString("title");
@@ -361,9 +373,11 @@ void Navigation::showForum(std::string title) {
         counter++;
     }
     if (counter == 1) {
+        std::cout << std::endl;
         std::cout << "There are no threads in this forum for title " << title << std::endl;
     }
     nextAction = 0;
+    std::cout << std::endl;
     std::cout << "Select thread number to view posts or type 0 to go to main menu or -1 to make a new thread in this forum: " << std::endl;
     std::cin >> nextAction;
 
@@ -433,6 +447,7 @@ void Navigation::showThread(std::string threadID) {
     delete stmt;
     int userInput;
 
+    std::cout << std::endl;
     std::cout << "Please select next action: Add to Thread (1) , Delete Post from Thread (2) , Return to Main Menu (3)" << std::endl;
     std::cin >> userInput;
 	
@@ -459,6 +474,7 @@ void Navigation::postInThread(std::string threadID) {
     std::string postID;
     stmt = con->createStatement();
 
+    std::cout << std::endl;
     std::cout << "Please enter your post below:" << std::endl;
     std::cin.ignore();
     getline(std::cin, postText);
@@ -478,6 +494,7 @@ void Navigation::deletePostInThread(std::string threadID,std::map<int,std::strin
     int post_num;
     stmt = con->createStatement();
 
+    std::cout << std::endl;
     std::cout << "Please enter post number you would like to remove:" << std::endl;
     std::cin >> post_num;
     
@@ -501,6 +518,7 @@ void Navigation::addFriend() {
 	std::string lastName = "";
 	std::string friendID = "";
 	
+	std::cout << std::endl;
 	std::cout << "Enter full name of user you would like to add to your friends list: ";
 	std::cin >> firstName >> lastName;
 	
@@ -537,7 +555,8 @@ void Navigation::showFriends() {
 		WHERE connections.user_id = \"" + this->currentUser + "\"";
 	stmt->execute("USE ece656project");
 	res = stmt->executeQuery(query);
-
+	std::cout << std::endl;
+	std::cout << "Current friends:" << std::endl;
 	std::cout << std::endl;
 	while(res->next()) {
 		std::cout << res->getString("first_name") << " " << res->getString("last_name") << std::endl;
@@ -568,8 +587,8 @@ void Navigation::deleteFriend() {
 	stmt->execute("USE ece656project");
 	res = stmt->executeQuery(query);
 	
+	std::cout << std::endl;
 	std::cout << "Current friends:" << std::endl;
-
 	std::cout << std::endl;
 	while(res->next()) {
 		std::cout << res->getString("first_name") << " " << res->getString("last_name") << std::endl;
@@ -634,6 +653,9 @@ std::string Navigation::searchFriends(std::string firstName,std::string lastName
 }
 
 void Navigation::logOut() {
+	std::cout << std::endl;
+	std::cout << "Logging Out!" << std::endl;
+	std::cout << std::endl;
 	mainUXHandle();
 }
 
@@ -649,6 +671,7 @@ void Navigation::makeThread(std::string forumID) {
     postID = this->credentialGen->generateCredential("Post", this->con);
     stmt = con->createStatement();
 
+    std::cout << std::endl;
     std::cout << "Enter the title of the thread:" << std::endl;
     std::cin.ignore();
     getline(std::cin, title);
@@ -678,6 +701,7 @@ void Navigation::rateMovie() {
 	std::string rating  = "";
 	std::string title_id = "";
 	
+	std::cout << std::endl;
 	std::cout << "Enter name of movie you would like to rate: ";
 	std::getline(std::cin >> std::ws, title);
 	
@@ -689,6 +713,7 @@ void Navigation::rateMovie() {
 
 		title_id = res->getString("tconst");
 		
+		std::cout << std::endl;
 		std::cout << "What rating (out of 10.0) would you like to give: "<< title << std::endl;
 		std::cin >> rating;
 		
@@ -719,10 +744,12 @@ void Navigation::showPersonalRatings() {
 	std::string query;
 	stmt = con->createStatement();
 	
-	query = "SELECT titleBasics.primaryTitle,rating FROM userRatings INNER JOIN titleBasics ON userRatings.titleID = titleBasics.tconst";
+	query = "SELECT titleBasics.primaryTitle,rating FROM userRatings INNER JOIN titleBasics ON userRatings.titleID = titleBasics.tconst WHERE userRatings.user_id = \"" + this->currentUser + "\"";
 	stmt->execute("USE ece656project");
 	res = stmt->executeQuery(query);
 
+	std::cout << std::endl;
+	std::cout << "Here are the ratings you have submitted:" << std::endl;
 	std::cout << std::endl;
 
 	while(res->next()) {
